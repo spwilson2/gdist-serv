@@ -1,0 +1,7 @@
+[package]
+name = "gdist-serv"
+version = "0.1.0"
+authors = ["Sean Wilson <sean.wilson@ghs.com>"]
+edition = "2018"
+
+[dependencies]
