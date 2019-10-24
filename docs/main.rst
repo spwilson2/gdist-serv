@@ -1,3 +1,4 @@
+=====
 Slimy
 =====
 
@@ -11,7 +12,7 @@ As a priority the following are prioritized above all else:
 **Speed of execution**
 
 Scheduled commands should be schedueld and executed quickly with little latency.
-As Slimy is designed to be a distributed build scheduler, it will likely received a constant stream of compile commands, and therefore should delay the execution of commands as little as possible. 
+As Slimy is designed to be a distributed build scheduler, it will likely received a constant stream of compile commands, and therefore should delay the execution of commands as little as possible.
 
 ---
 **Maintainable code**
@@ -24,7 +25,7 @@ This means code should be easy to both understand and modify without deep system
 
 
 Server - Client Architecture
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+============================
 
 The server-client connections is split into two layers in order to enable multiple methods of communication between clients and servers.
 
@@ -43,7 +44,7 @@ Connection API:
 Future<void> SendAsync(data) - Attempt to send the packet (order not garunteed), future is returned which can be checked for exception.
 Future<data> RecvAsync() - Attempt to receive a packet, a future is returned which will either contain the data or raise a DroppedConnection exception.
 Future<void> OnceClosed() - Return a future that can be used to await closure
-Close() - Close the connection, any Send/Recv commands will be canceled. 
+Close() - Close the connection, any Send/Recv commands will be canceled.
 Bool Closed() - Return if the connection is still valid (Note: a non-closed connection is not garunteed to be able to send/recv on)
 ```
 
@@ -62,17 +63,14 @@ This layer adds unique identification to connections.
 It adds the ability to maintain identification after connection reconnects.
 This also abstracts away the lower connection protocol, so the agent layer can be used with any connection implementation.
 
-Agent API:
-```
-Future<void> SendAsync(data) - Attempt to send the data (order not garunteed), future is returned which can be checked for exception.
-Future<data> RecvAsync() - Attempt to receive data, a future is returned which will either contain the data or raise a DroppedConnection exception.
+Agent API::
+    Future<void> SendAsync(data) - Attempt to send the data (order not garunteed), future is returned which can be checked for exception.
+    Future<data> RecvAsync() - Attempt to receive data, a future is returned which will either contain the data or raise a DroppedConnection exception.
 
-Bool - Unreachable() - Return if the Agent is currently unreachable (there is no backing active connection)
+    Bool - Unreachable() - Return if the Agent is currently unreachable (there is no backing active connection)
 
-Properties:
-- UID
-```
-
+Properties::
+    - UID
 
 
 UDP Connection Implementation
@@ -86,12 +84,12 @@ UDPConnectionFactory(client_not_server)
 ```
 
 Limitations
-+++++++++++
+~~~~~~~~~~~
 
 Because this UDP implementation does not implement any "sliding window" component, message sizes will be limited to the max UDP packet size.
 
 Messages
-++++++++
+~~~~~~~~
 
 All messages will contan a magic header with:
 - Version - 0x00010000 - 4B
@@ -118,7 +116,7 @@ All messages will contan a magic header with:
     - Connection UID
 
 Connection Process
-++++++++++++++++++
+~~~~~~~~~~~~~~~~~~
 
 Connecting to the server
 
@@ -163,7 +161,7 @@ This implementation of an agent will maintain only a single connection per Agent
 The Agent will manage creation of connections in order to maintain communication between hosts.
 
 Messages
-++++++++
+~~~~~~~~
 
 - Datagram - Send data between agents
     - Data
