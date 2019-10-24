@@ -179,3 +179,43 @@ User now calls SendAsync/RecvAsync
 3. Data is transferred via the connection, the call is forwarded to same connection method.
 
 If a send or recv fails with a ConnectionDisconnected exception, the Agent will re-create the connection.
+
+
+
+Manager - Worker Architecture
+==============================
+
+With connection logic properly encapuslated by the `Server - Client Architecture`, we now can split workers and managers into their own distinct implementations.
+
+Manager Node
+------------
+
+In a cluster there is a single Manager node.
+The Manager's role is to schedule and forward Task Queues to connected worker nodes.
+
+While Workers are completing tasks, they will continually push task results to the Manger node.
+If a task fails to complete the Manager can revoke Workers tasks.
+(This is useful in the case of using Slimy as a distributed build system.
+If compilation fails, there's no reason to continue the build because not all object files required to link will be created.)
+
+.. Comment
+    Note that we wrote "Task Queues".
+    We might be able to implement some sort of Cilk like scheduler where we hand part of the DAG to a worker node and then it's the worker node's job to finish that DAG.
+
+Worker Node
+-----------
+
+In a cluster there are one or more Worker nodes.
+Worker nodes receive Task Queues from the manager node.
+Worker nodes begin execution of tasks from this queue of tasks.
+As tasks are completed, results are reported back to the Manager node.
+
+
+.. Comment
+    Lifecycle Planning
+    ==================
+    - Server starts up
+    - Server receives a list of jobs
+    - Server schedules jobs on the pool of workers
+    Async Chain:
+    - Server listens for connections
