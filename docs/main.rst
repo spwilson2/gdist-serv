@@ -39,21 +39,21 @@ This could be implemented as a TCP channel, ad-hoc UDP solution, or even a share
 In our simple implementation, we opt to use an ad-hoc UDP based channel.
 
 
-Connection API:
-```
-Future<void> SendAsync(data) - Attempt to send the packet (order not garunteed), future is returned which can be checked for exception.
-Future<data> RecvAsync() - Attempt to receive a packet, a future is returned which will either contain the data or raise a DroppedConnection exception.
-Future<void> OnceClosed() - Return a future that can be used to await closure
-Close() - Close the connection, any Send/Recv commands will be canceled.
-Bool Closed() - Return if the connection is still valid (Note: a non-closed connection is not garunteed to be able to send/recv on)
-```
+Connection API::
+
+    Future<void> SendAsync(data) - Attempt to send the packet (order not garunteed), future is returned which can be checked for exception.
+    Future<data> RecvAsync() - Attempt to receive a packet, a future is returned which will either contain the data or raise a DroppedConnection exception.
+    Future<void> OnceClosed() - Return a future that can be used to await closure
+    Close() - Close the connection, any Send/Recv commands will be canceled.
+    Bool Closed() - Return if the connection is still valid (Note: a non-closed connection is not garunteed to be able to send/recv on)
+
 
 We also expect Connection implentations to be created via a ConnectionFactory:
 
-Connection Factory API:
-```
-Future<Connection> ConnectAsync()
-```
+Connection Factory API::
+
+    Future<Connection> ConnectAsync()
+
 
 Agent layer
 -----------
@@ -78,10 +78,9 @@ UDP Connection Implementation
 
 The UDP Connection Factory will split connection initialization by client and server attributes.
 
-FactoryAPI:
-```
-UDPConnectionFactory(client_not_server)
-```
+FactoryAPI::
+
+    UDPConnectionFactory(client_not_server)
 
 Limitations
 ~~~~~~~~~~~
@@ -181,6 +180,29 @@ User now calls SendAsync/RecvAsync
 If a send or recv fails with a ConnectionDisconnected exception, the Agent will re-create the connection.
 
 
+Work Scheduler
+==============
+
+Work Tree
+---------
+
+Slimy organizes work which can be distributed across nodes into a Work Tree.
+This tree is formed by a DAG of Tasks and their dependendant tasks.
+That is the root of the tree depends on the completion of all tasks.
+A leaf node in the tree is a task which has no dependencies (and could be started right away).
+
+Work Distributing
+-----------------
+
+Currently, Slimy will only send a single task from the Work Tree of the Manger Node to a Worker Node at a time.
+The downside of this is that communicaton between the Manger Node and the Worker Node will be on the critical path for each the completion of every task.
+The upside is that this makes the scheduler much simpler as there is no need to think about distributed work stealing algorithms.
+
+Scheduler API
+-------------
+::
+
+    designed
 
 Manager - Worker Architecture
 ==============================
@@ -194,13 +216,18 @@ In a cluster there is a single Manager node.
 The Manager's role is to schedule and forward Task Queues to connected worker nodes.
 
 While Workers are completing tasks, they will continually push task results to the Manger node.
-If a task fails to complete the Manager can revoke Workers tasks.
+If a task fails to complete the Manager can revoke Workers' tasks.
 (This is useful in the case of using Slimy as a distributed build system.
 If compilation fails, there's no reason to continue the build because not all object files required to link will be created.)
 
 .. Comment
     Note that we wrote "Task Queues".
-    We might be able to implement some sort of Cilk like scheduler where we hand part of the DAG to a worker node and then it's the worker node's job to finish that DAG.
+    We might be able to implement some sort of Cilk-like scheduler where we hand part of the DAG to a worker node and then it's the worker node's job to finish that DAG.
+
+
+API::
+
+    _SendTaskTree(worker, tree)
 
 Worker Node
 -----------
@@ -219,3 +246,7 @@ As tasks are completed, results are reported back to the Manager node.
     - Server schedules jobs on the pool of workers
     Async Chain:
     - Server listens for connections
+
+API::
+
+    TODO
