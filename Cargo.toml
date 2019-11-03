@@ -1,5 +1,5 @@
 [package]
-name = "gdist-serv"
+name = "gdist"
 version = "0.1.0"
 authors = ["Sean Wilson <sean.wilson@ghs.com>"]
 edition = "2018"
@@ -7,5 +7,7 @@ edition = "2018"
 [dependencies]
 #futures-preview = { version = "=0.3.0-alpha.19", features = ["async-await"] }
 futures = "0.1.29"
+futures-util-preview = "0.3.0-alpha.19"
 tokio = "0.2.0-alpha.6"
 clap = "~2.27.0"
+gdist-common = { path = "./gdist-common" }
